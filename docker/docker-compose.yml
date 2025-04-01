@@ -1,0 +1,61 @@
+#Background
+
+# In order to make swift movements on the PoC, we need to establish a docker-compose file which will be 
+# stored in our project repository so that every member has the correct containers setup.
+
+# As the data warehouse we plan on using is based on PostgreSQL (rather than MySQL), we will need to spin up a container instance for it.
+
+# We should also make use of a container that can run Adminer for us too so we can query the data easily.
+
+# User Story
+
+# As a developer I want to create a docker-compose.yml file So that I can share the same infrastructure with my team
+
+# Use postgres/example user/password credentials
+
+# DOCKER COMMANDS:
+#     GET POSTGRES ON DOCKER:
+#     docker pull postgres
+    
+#     INSIDE THE DOCKER FOLDER TERMINAL:
+#         START THE DOCKER:
+#         docker-compose up
+
+#         CHECK DOCKER CONFIG DETAILS IN TERMINAL:
+#         docker config
+
+#         Ctrl+C to stop the docker
+
+# NOT THIS ONE: docker run -it postgres /bin/bash
+# THIS ONE: docker-compose up
+
+version: '3.9'
+
+services:
+
+  db:
+    image: postgres
+    restart: always
+    container_name: postgres_container
+    ports:
+      - "5432:5432"
+    # set shared memory limit when using docker-compose
+    # shm_size: 128mb
+    # OR set shared memory limit when deploy via swarm stack
+    volumes:
+    - type: tmpfs
+      target: /dev/shm
+      tmpfs:
+        size: 134217728 # 128*2^20 bytes = 128Mb
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+
+  adminer:
+    image: adminer
+    container_name: adminer_container_2
+    restart: always
+    ports:
+      - 8080:8080
+
